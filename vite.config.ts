@@ -1,23 +1,56 @@
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, '.', '');
-    return {
-      server: {
-        port: 3000,
-        host: '0.0.0.0',
-      },
-      plugins: [react()],
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-      },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
+  const env = loadEnv(mode, '.', '');
+  const isProd = mode === 'production';
+  const base = isProd ? '/Aura-Weather/' : '/';
+
+  const svgIcon = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234338ca'/%3E%3Cstop offset='100%25' stop-color='%230f172a'/%3E%3C/linearGradient%3E%3Cfilter id='b' color-interpolation-filters='sRGB'%3E%3CfeGaussianBlur stdDeviation='10'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23g)'/%3E%3Ccircle cx='256' cy='200' r='100' fill='%23fbbf24'/%3E%3Cpath d='M160 360c-44.2 0-80-35.8-80-80s35.8-80 80-80h40c8.8 0 16-7.2 16-16 0-35.3 28.7-64 64-64s64 28.7 64 64c0 8.8 7.2 16 16 16h20c44.2 0 80 35.8 80 80s-35.8 80-80 80H160z' fill='%23fff' opacity='0.9' filter='url(%23b)'/%3E%3Cpath d='M160 360c-44.2 0-80-35.8-80-80s35.8-80 80-80h40c8.8 0 16-7.2 16-16 0-35.3 28.7-64 64-64s64 28.7 64 64c0 8.8 7.2 16 16 16h20c44.2 0 80 35.8 80 80s-35.8 80-80 80H160z' fill='%23fff' opacity='0.8'/%3E%3C/svg%3E";
+
+  return {
+    base: base,
+    server: {
+      port: 3000,
+      host: '0.0.0.0',
+    },
+    plugins: [
+      react(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        manifest: {
+          name: 'Aura Weather',
+          short_name: 'Aura',
+          description: 'Beautiful AI-powered weather app',
+          theme_color: '#0f172a',
+          background_color: '#0f172a',
+          display: 'standalone',
+          start_url: base,
+          scope: base,
+          icons: [
+            {
+              src: svgIcon,
+              sizes: '192x192',
+              type: 'image/svg+xml'
+            },
+            {
+              src: svgIcon,
+              sizes: '512x512',
+              type: 'image/svg+xml'
+            }
+          ]
         }
+      })
+    ],
+    define: {
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || '')
+    },
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '.'),
       }
-    };
+    }
+  };
 });
