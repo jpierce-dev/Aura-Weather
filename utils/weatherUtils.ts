@@ -62,8 +62,7 @@ export const getIconForWeather = (code: number, isDay: number = 1) => {
 
 export const getCityLocalTime = (utcOffsetSeconds: number): Date => {
   const now = new Date();
-  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-  return new Date(utc + (utcOffsetSeconds * 1000));
+  return new Date(now.getTime() + (utcOffsetSeconds * 1000));
 };
 
 export const formatCityTime = (isoString: string): string => {

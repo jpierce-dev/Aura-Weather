@@ -58,8 +58,8 @@ const SunCard: React.FC<SunCardProps> = ({ daily, utcOffsetSeconds, className, o
   const width = 160;
   const height = 90;
   const paddingX = 20;
-  const horizonY = 65;
-  const peakY = 20;
+  const horizonY = 70; // Moved down slightly
+  const peakY = 25;    // Adjusted peak accordingly
 
   const startX = paddingX;
   const endX = width - paddingX;
@@ -87,16 +87,16 @@ const SunCard: React.FC<SunCardProps> = ({ daily, utcOffsetSeconds, className, o
       onClick={onClick}
       className={`bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 flex flex-col relative overflow-hidden aspect-square ${onClick ? 'cursor-pointer active:scale-95 transition-transform' : ''} ${className || ''}`}
     >
-      <div className="flex items-center text-xs font-medium text-white/70 mb-1 z-10">
+      <div className="flex items-center text-xs font-medium text-white/70 mb-2 z-10">
         <Icon size={14} className="mr-1.5" /> {title}
       </div>
 
-      <div className="text-3xl font-medium text-white mb-2 z-10">
+      <div className="text-2xl font-medium text-white mb-2 z-10">
         {displayTimeStr}
       </div>
 
       <div className="absolute inset-0 top-6 flex items-end justify-center pb-2">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-[90%] h-[92%] overflow-visible">
           <defs>
             <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#fbbf24" />

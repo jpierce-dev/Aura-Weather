@@ -17,12 +17,12 @@ interface WeatherGridProps {
 const CardContainer = ({ title, icon: Icon, children, className = '', onClick }: any) => (
   <div
     onClick={onClick}
-    className={`bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/10 flex flex-col relative overflow-hidden aspect-square ${className} ${onClick ? 'cursor-pointer active:scale-95 transition-transform' : ''}`}
+    className={`bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 flex flex-col relative overflow-hidden aspect-square ${className} ${onClick ? 'cursor-pointer active:scale-95 transition-transform' : ''}`}
   >
-    <div className="flex items-center text-xs font-medium text-white/70 mb-1 z-20 h-5">
+    <div className="flex items-center text-xs font-medium text-white/70 mb-2 z-20">
       <Icon size={14} className="mr-1.5" /> {title}
     </div>
-    <div className="flex-1 relative z-10 w-full h-full">
+    <div className="flex-1 relative z-10 w-full h-full flex flex-col items-center justify-center">
       {children}
     </div>
   </div>
@@ -36,8 +36,8 @@ const AQICard = ({ aqi, onClick }: { aqi: number, onClick: () => void }) => {
   return (
     <CardContainer title="空气质量" icon={Wind} onClick={onClick}>
       <div className="absolute inset-0 flex flex-col items-center justify-center pt-2">
-        <div className="text-3xl font-semibold text-white leading-none">{aqi}</div>
-        <div className={`text-sm font-medium mt-1 ${color}`}>{label}</div>
+        <div className="text-3xl font-semibold text-white leading-none tracking-tight">{aqi}</div>
+        <div className={`text-[10px] font-medium mt-1 px-1.5 py-0.5 rounded-full bg-white/10 ${color}`}>{label}</div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <svg viewBox="0 0 100 100" className="w-[110%] h-[110%] overflow-visible mt-4">
@@ -48,10 +48,10 @@ const AQICard = ({ aqi, onClick }: { aqi: number, onClick: () => void }) => {
               <stop offset="100%" stopColor="#ef4444" />
             </linearGradient>
           </defs>
-          <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" strokeLinecap="round" />
-          <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="url(#aqiGradient)" strokeWidth="8" strokeLinecap="round" strokeDasharray="110" strokeDashoffset={110 - (110 * (percentage / 100))} />
+          <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" strokeLinecap="round" />
+          <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="url(#aqiGradient)" strokeWidth="6" strokeLinecap="round" strokeDasharray="110" strokeDashoffset={110 - (110 * (percentage / 100))} />
           <g transform={`rotate(${angle}, 50, 50)`}>
-            <circle cx="50" cy="15" r="5" fill="white" stroke="rgba(0,0,0,0.2)" strokeWidth="2" className="shadow-sm" />
+            <circle cx="50" cy="15" r="4" fill="white" stroke="rgba(0,0,0,0.2)" strokeWidth="2" className="shadow-sm" />
           </g>
         </svg>
       </div>
@@ -73,8 +73,8 @@ const UVCard = ({ uvIndex }: { uvIndex: number }) => {
   return (
     <CardContainer title="紫外线" icon={Sun}>
       <div className="absolute inset-0 flex flex-col items-center justify-center pt-2">
-        <div className="text-3xl font-semibold text-white leading-none">{uvIndex.toFixed(0)}</div>
-        <div className="text-sm font-medium text-white/80 mt-1">{label}</div>
+        <div className="text-3xl font-semibold text-white leading-none tracking-tight">{uvIndex.toFixed(0)}</div>
+        <div className="text-[10px] font-medium text-white/60 mt-1 px-2 py-0.5 rounded-full bg-white/5">{label}</div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <svg viewBox="0 0 100 100" className="w-[110%] h-[110%] overflow-visible mt-4">
@@ -86,10 +86,10 @@ const UVCard = ({ uvIndex }: { uvIndex: number }) => {
               <stop offset="100%" stopColor="#ef4444" />
             </linearGradient>
           </defs>
-          <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" strokeLinecap="round" />
-          <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="url(#uvGradient)" strokeWidth="8" strokeLinecap="round" strokeDasharray="110" strokeDashoffset={110 - (110 * percentage)} />
+          <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" strokeLinecap="round" />
+          <path d="M 15 50 A 35 35 0 0 1 85 50" fill="none" stroke="url(#uvGradient)" strokeWidth="6" strokeLinecap="round" strokeDasharray="110" strokeDashoffset={110 - (110 * percentage)} />
           <g transform={`rotate(${angle}, 50, 50)`}>
-            <circle cx="50" cy="15" r="5" fill="white" stroke="rgba(0,0,0,0.2)" strokeWidth="2" className="shadow-sm" />
+            <circle cx="50" cy="15" r="4" fill="white" stroke="rgba(0,0,0,0.2)" strokeWidth="2" className="shadow-sm" />
           </g>
         </svg>
       </div>
@@ -106,13 +106,22 @@ const HumidityCard = ({ humidity }: { humidity: number }) => {
   return (
     <CardContainer title="湿度" icon={Droplets}>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-3xl font-semibold text-white leading-none">{humidity}<span className="text-lg align-top">%</span></div>
-        <div className="text-xs font-medium text-white/60 mt-1">{label}</div>
+        <div className="text-2xl font-semibold text-white leading-none tracking-tight z-10 relative">
+          {humidity}<span className="text-sm align-top ml-0.5">%</span>
+          {/* Subtle Glow behind text */}
+          <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full -z-10" />
+        </div>
+        <div className="text-[10px] font-medium text-white/50 mt-1">{label}</div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <svg viewBox="0 0 100 100" className="w-[90%] h-[90%] rotate-180">
-          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
-          <circle cx="50" cy="50" r="42" fill="none" stroke="#60a5fa" strokeWidth="6" strokeLinecap="round" strokeDasharray="264" strokeDashoffset={264 - (264 * (humidity / 100))} className="transition-all duration-1000 ease-out" />
+        <svg viewBox="0 0 100 100" className="w-[85%] h-[85%] rotate-180">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
+          <circle cx="50" cy="50" r="40" fill="none" stroke="#60a5fa" strokeWidth="4" strokeLinecap="round" strokeDasharray="251" strokeDashoffset={251 - (251 * (humidity / 100))} className="transition-all duration-1000 ease-out drop-shadow-[0_0_8px_rgba(96,165,250,0.6)]" /> {/* Added glow to ring */}
+
+          {/* Decorative Ticks on Ring */}
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((d, i) => (
+            <circle key={i} cx={50 + 32 * Math.cos(d * Math.PI / 180)} cy={50 + 32 * Math.sin(d * Math.PI / 180)} r="1" fill="rgba(255,255,255,0.3)" />
+          ))}
         </svg>
       </div>
     </CardContainer>
@@ -133,9 +142,9 @@ const FeelsLikeCard = ({ temp }: { temp: number }) => {
 
   return (
     <CardContainer title="体感" icon={Thermometer}>
-      <div className="absolute inset-0 flex flex-col items-center justify-center pt-4">
-        <div className="text-3xl font-semibold text-white leading-none">{Math.round(temp)}°</div>
-        <div className="text-xs font-medium text-white/60 mt-1">{label}</div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pt-3">
+        <div className="text-3xl font-semibold text-white leading-none tracking-tight">{Math.round(temp)}°</div>
+        <div className="text-[10px] font-medium text-white/60 mt-1 px-2 py-0.5 rounded-full bg-white/5">{label}</div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none mt-1">
         <svg viewBox="0 0 100 100" className="w-[100%] h-[100%] overflow-visible">
@@ -149,7 +158,7 @@ const FeelsLikeCard = ({ temp }: { temp: number }) => {
           <path d="M 30.9 83 A 38 38 0 1 1 69.1 83" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" strokeLinecap="round" />
           <path d="M 30.9 83 A 38 38 0 1 1 69.1 83" fill="none" stroke="url(#tempGradient)" strokeWidth="6" strokeLinecap="round" />
           <g transform={`rotate(${angle}, 50, 50)`}>
-            <circle cx="50" cy="12" r="4" fill="white" stroke="rgba(0,0,0,0.3)" strokeWidth="1" className="shadow-sm" />
+            <circle cx="50" cy="12" r="3.5" fill="white" stroke="rgba(0,0,0,0.3)" strokeWidth="1" className="shadow-sm" />
           </g>
         </svg>
       </div>
@@ -162,27 +171,30 @@ const WindCard = ({ speed, direction }: { speed: number, direction: number }) =>
   const level = getWindScale(speed);
   return (
     <CardContainer title="风向" icon={Wind}>
-      <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-        <div className="text-xl font-bold text-white">{level}级</div>
-        <div className="text-[10px] text-white/60">{Math.round(speed)} km/h</div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pt-1">
+        <div className="text-lg font-bold text-white leading-none">{level}级</div>
+        <div className="text-[11px] text-white/70 mt-1 font-medium tracking-wide bg-white/5 px-2 py-0.5 rounded-full">{Math.round(speed)} km/h</div> {/* Increased size & added background */}
       </div>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <svg viewBox="0 0 100 100" className="w-[95%] h-[95%]">
-          <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <svg viewBox="0 0 100 100" className="w-[85%] h-[85%]">
+          {/* Compass Rose Background Pattern */}
+          <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="15" /> {/* Thicker faint ring */}
+
           {[0, 90, 180, 270].map(d => (
-            <line key={d} x1="50" y1="6" x2="50" y2="10" stroke="white" strokeWidth="2" transform={`rotate(${d}, 50, 50)`} />
+            <line key={d} x1="50" y1="4" x2="50" y2="8" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" transform={`rotate(${d}, 50, 50)`} />
           ))}
           {Array.from({ length: 8 }).map((_, i) => (
-            <line key={i} x1="50" y1="6" x2="50" y2="8" stroke="rgba(255,255,255,0.5)" strokeWidth="1" transform={`rotate(${i * 45 + 45}, 50, 50)`} />
+            <line key={i} x1="50" y1="4" x2="50" y2="6" stroke="rgba(255,255,255,0.3)" strokeWidth="1" transform={`rotate(${i * 45 + 45}, 50, 50)`} />
           ))}
-          <text x="50" y="20" fill="white" fontSize="8" textAnchor="middle" fontWeight="bold">北</text>
-          <text x="80" y="53" fill="white" fontSize="8" textAnchor="middle" fontWeight="bold">东</text>
-          <text x="50" y="86" fill="white" fontSize="8" textAnchor="middle" fontWeight="bold">南</text>
-          <text x="20" y="53" fill="white" fontSize="8" textAnchor="middle" fontWeight="bold">西</text>
+
+          <text x="50" y="16" fill="rgba(255,255,255,0.9)" fontSize="6" textAnchor="middle" fontWeight="bold">N</text>
+          <text x="86" y="52" fill="rgba(255,255,255,0.7)" fontSize="6" textAnchor="middle" fontWeight="bold">E</text>
+          <text x="50" y="89" fill="rgba(255,255,255,0.7)" fontSize="6" textAnchor="middle" fontWeight="bold">S</text>
+          <text x="14" y="52" fill="rgba(255,255,255,0.7)" fontSize="6" textAnchor="middle" fontWeight="bold">W</text>
           <g transform={`rotate(${direction}, 50, 50)`}>
-            <path d="M 50 25 L 55 40 L 50 35 L 45 40 Z" fill="#60a5fa" />
-            <path d="M 50 35 L 50 65" stroke="#60a5fa" strokeWidth="1.5" />
-            <circle cx="50" cy="50" r="2" fill="white" />
+            <path d="M 50 20 L 54 35 L 50 30 L 46 35 Z" fill="#60a5fa" className="drop-shadow-[0_0_5px_rgba(96,165,250,0.8)]" /> {/* Added glow to arrow */}
+            <path d="M 50 30 L 50 65" stroke="#60a5fa" strokeWidth="1" strokeDasharray="2 2" />
+            <circle cx="50" cy="50" r="1.5" fill="white" />
           </g>
         </svg>
       </div>
@@ -199,23 +211,27 @@ const PressureCard = ({ pressure }: { pressure: number }) => {
 
   return (
     <CardContainer title="气压" icon={Gauge}>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-2xl font-bold text-white">{Math.round(pressure)}</div>
-        <div className="text-[10px] font-bold text-white/50">hPa</div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center pt-1">
+        <div className="text-xl font-bold text-white leading-none tracking-tight">{Math.round(pressure)}</div>
+        <div className="text-[9px] font-medium text-white/50 mt-1">hPa</div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <svg viewBox="0 0 100 100" className="w-[100%] h-[100%]">
+        <svg viewBox="0 0 100 100" className="w-[90%] h-[90%]">
+          {/* Active Arc Background */}
+          <path d="M 18 82 A 45 45 0 1 1 82 82" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" strokeLinecap="round" />
+
           {Array.from({ length: 20 }).map((_, i) => {
             const deg = -135 + (i * (270 / 19));
             const isMajor = i % 5 === 0;
             return (
-              <line key={i} x1="50" y1="12" x2="50" y2={isMajor ? 20 : 16} stroke={isMajor ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.2)"} strokeWidth={isMajor ? 1.5 : 1} transform={`rotate(${deg}, 50, 50)`} />
+              <line key={i} x1="50" y1="5" x2="50" y2={isMajor ? 12 : 8} stroke={isMajor ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.15)"} strokeWidth={isMajor ? 1.5 : 1} transform={`rotate(${deg}, 50, 50)`} />
             )
           })}
           <g transform={`rotate(${angle}, 50, 50)`}>
-            <path d="M 50 22 L 54 28 L 46 28 Z" fill="#60a5fa" />
+            <path d="M 50 18 L 53 26 L 47 26 Z" fill="#60a5fa" className="drop-shadow-[0_0_4px_rgba(96,165,250,0.8)]" />
           </g>
-          <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+          {/* Inner decorative circle */}
+          <circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" strokeDasharray="3 3" />
         </svg>
       </div>
     </CardContainer>
