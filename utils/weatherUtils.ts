@@ -3,7 +3,6 @@ import { Cloud, CloudDrizzle, CloudFog, CloudLightning, CloudRain, CloudSnow, Mo
 import { WeatherType } from '../types';
 
 // WMO Weather interpretation codes (WW)
-// https://open-meteo.com/en/docs
 export const getWeatherType = (code: number): WeatherType => {
   if (code === 0) return WeatherType.Clear;
   if (code >= 1 && code <= 3) return WeatherType.Cloudy;
@@ -49,11 +48,7 @@ export const getWeatherDescription = (code: number): string => {
 
 export const getIconForWeather = (code: number, isDay: number = 1) => {
   const type = getWeatherType(code);
-  
-  if (type === WeatherType.Clear) {
-    return isDay ? Sun : Moon;
-  }
-  
+  if (type === WeatherType.Clear) return isDay ? Sun : Moon;
   switch (type) {
     case WeatherType.Cloudy: return Cloud;
     case WeatherType.Fog: return CloudFog;
@@ -65,26 +60,38 @@ export const getIconForWeather = (code: number, isDay: number = 1) => {
   }
 };
 
-export const formatTime = (isoString: string): string => {
-  const date = new Date(isoString);
-  // Time remains numeric/English format (e.g., 10:00 AM)
-  return date.toLocaleTimeString([], { hour: 'numeric', hour12: false, minute: '2-digit' });
+export const getCityLocalTime = (utcOffsetSeconds: number): Date => {
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  return new Date(utc + (utcOffsetSeconds * 1000));
 };
 
-export const getDayName = (isoString: string): string => {
-  const date = new Date(isoString);
-  const today = new Date();
-  
-  if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth()) {
-    return '今天';
-  }
-  
-  // Use Chinese week names
+export const formatCityTime = (isoString: string): string => {
+  const parts = isoString.split('T');
+  if (parts.length < 2) return '--:--';
+  return parts[1].substring(0, 5); // "HH:MM"
+};
+
+export const parseCityDate = (isoString: string): Date => {
+  return new Date(isoString + "Z");
+};
+
+export const getDayName = (isoString: string, utcOffsetSeconds: number = 0): string => {
+  const date = parseCityDate(isoString);
+  const cityNow = getCityLocalTime(utcOffsetSeconds);
+
+  // Set times to midnight for accurate day comparison
+  const d1 = new Date(date.getTime());
+  d1.setUTCHours(0, 0, 0, 0);
+  const d2 = new Date(cityNow.getTime());
+  d2.setUTCHours(0, 0, 0, 0);
+
+  if (d1.getTime() === d2.getTime()) return '今天';
+
   const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-  return days[date.getDay()];
+  return days[date.getUTCDay()];
 };
 
-// Convert km/h to Beaufort scale (Wind Level)
 export const getWindScale = (speedKmh: number): number => {
   if (speedKmh < 1) return 0;
   if (speedKmh < 6) return 1;
@@ -101,25 +108,16 @@ export const getWindScale = (speedKmh: number): number => {
   return 12;
 };
 
-// AQI Helpers
 export const getAQIDescription = (aqi: number) => {
-  if (aqi <= 50) return { label: "优", color: "text-green-400", bgGradient: "from-green-400 to-green-500", percentage: (aqi/50)*100 };
-  if (aqi <= 100) return { label: "良", color: "text-yellow-400", bgGradient: "from-yellow-400 to-yellow-500", percentage: ((aqi-50)/50)*100 };
-  if (aqi <= 150) return { label: "轻度污染", color: "text-orange-400", bgGradient: "from-orange-400 to-orange-500", percentage: ((aqi-100)/50)*100 };
-  if (aqi <= 200) return { label: "中度污染", color: "text-red-400", bgGradient: "from-red-400 to-red-500", percentage: ((aqi-150)/50)*100 };
-  if (aqi <= 300) return { label: "重度污染", color: "text-purple-400", bgGradient: "from-purple-400 to-purple-500", percentage: ((aqi-200)/100)*100 };
-  return { label: "严重污染", color: "text-red-900", bgGradient: "from-red-800 to-red-900", percentage: 100 };
+  if (aqi <= 50) return { label: "优", color: "text-green-400", percentage: (aqi / 50) * 100 };
+  if (aqi <= 100) return { label: "良", color: "text-yellow-400", percentage: ((aqi - 50) / 50) * 100 };
+  if (aqi <= 150) return { label: "轻度污染", color: "text-orange-400", percentage: ((aqi - 100) / 50) * 100 };
+  if (aqi <= 200) return { label: "中度污染", color: "text-red-400", percentage: ((aqi - 150) / 50) * 100 };
+  if (aqi <= 300) return { label: "重度污染", color: "text-purple-400", percentage: ((aqi - 200) / 100) * 100 };
+  return { label: "严重污染", color: "text-red-900", percentage: 100 };
 };
 
-// Moon Phase Helpers
 export const getMoonPhaseDescription = (phase: number) => {
-  // Phase is 0 to 1
-  // 0: New Moon
-  // 0.25: First Quarter
-  // 0.5: Full Moon
-  // 0.75: Last Quarter
-  
-  // Approximate ranges
   if (phase > 0.95 || phase <= 0.05) return "新月";
   if (phase > 0.05 && phase < 0.20) return "娥眉月";
   if (phase >= 0.20 && phase <= 0.30) return "上弦月";
@@ -130,11 +128,8 @@ export const getMoonPhaseDescription = (phase: number) => {
   return "残月";
 };
 
-// Calculate Moon Phase locally
-// Returns 0.0 to 1.0
 export const calculateMoonPhase = (date: Date): number => {
   const synodic = 29.53058867;
-  // Known New Moon: Jan 6 2000, 18:14 UTC
   const knownNewMoon = new Date(Date.UTC(2000, 0, 6, 18, 14, 0)).getTime();
   const diff = date.getTime() - knownNewMoon;
   const days = diff / (1000 * 60 * 60 * 24);

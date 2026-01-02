@@ -16,18 +16,14 @@ export interface SearchResult {
 }
 
 export const fetchWeatherData = async (location: GeoLocation): Promise<WeatherData> => {
-  // Use browser timezone or default to UTC
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-
+  // Use 'auto' to get the actual timezone of the location from Open-Meteo
   const weatherParams = new URLSearchParams({
     latitude: location.lat.toString(),
     longitude: location.lon.toString(),
     current: 'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure',
     hourly: 'temperature_2m,weather_code,precipitation_probability,uv_index,is_day,wind_speed_10m',
-    // Removed moonrise and moonset as they cause 400 errors on the generic endpoint.
-    // Moon phase is calculated locally.
     daily: 'weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum,wind_speed_10m_max',
-    timezone: timezone,
+    timezone: 'auto',
     forecast_days: '16'
   });
 
@@ -36,11 +32,9 @@ export const fetchWeatherData = async (location: GeoLocation): Promise<WeatherDa
     longitude: location.lon.toString(),
     current: 'us_aqi,pm10,pm2_5',
     hourly: 'us_aqi',
-    timezone: timezone,
+    timezone: 'auto',
     forecast_days: '5'
   });
-
-  console.log("Fetching weather...");
 
   try {
     const [weatherResponse, aqResponse] = await Promise.all([
@@ -55,22 +49,19 @@ export const fetchWeatherData = async (location: GeoLocation): Promise<WeatherDa
     }
 
     const data = await weatherResponse.json();
-    let aqData = { 
+    let aqData = {
       current: { us_aqi: undefined, pm10: undefined, pm2_5: undefined },
       hourly: { us_aqi: [] }
     };
 
     if (aqResponse.ok) {
       aqData = await aqResponse.json();
-    } else {
-      console.warn("Air Quality API failed, continuing without AQI");
     }
-    
-    // Calculate moon phases locally to ensure consistent 0-1 float for animation
+
+    // Calculate moon phases locally
     const dailyTime = data.daily.time || [];
     const moonPhases = dailyTime.map((t: string) => calculateMoonPhase(new Date(t)));
 
-    // Map API response to our WeatherData interface
     return {
       current: {
         temperature: data.current.temperature_2m,
@@ -104,14 +95,16 @@ export const fetchWeatherData = async (location: GeoLocation): Promise<WeatherDa
         uv_index_max: data.daily.uv_index_max,
         precipitation_sum: data.daily.precipitation_sum,
         wind_speed_10m_max: data.daily.wind_speed_10m_max,
-        moon_phase: moonPhases, 
-        moonrise: data.daily.moonrise || [], 
+        moon_phase: moonPhases,
+        moonrise: data.daily.moonrise || [],
         moonset: data.daily.moonset || [],
       },
       current_units: {
         temperature: data.current_units.temperature_2m,
         wind_speed: data.current_units.wind_speed_10m,
-      }
+      },
+      utcOffsetSeconds: data.utc_offset_seconds || 0,
+      timezone: data.timezone || 'UTC'
     };
   } catch (error) {
     console.error("API Fetch Error:", error);
@@ -133,7 +126,7 @@ export const getCityName = async (lat: number, lon: number): Promise<string> => 
 
 export const searchCity = async (query: string): Promise<SearchResult[]> => {
   if (!query || query.length < 2) return [];
-  
+
   try {
     const params = new URLSearchParams({
       name: query,
@@ -141,10 +134,10 @@ export const searchCity = async (query: string): Promise<SearchResult[]> => {
       language: 'zh',
       format: 'json'
     });
-    
+
     const response = await fetch(`${GEOCODING_URL}?${params.toString()}`);
     if (!response.ok) throw new Error("Search failed");
-    
+
     const data = await response.json();
     return data.results || [];
   } catch (e) {

@@ -40,7 +40,10 @@ export interface WeatherData {
     temperature: string;
     wind_speed: string;
   };
+  utcOffsetSeconds: number;
+  timezone: string;
 }
+
 
 export interface GeoLocation {
   lat: number;
