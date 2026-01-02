@@ -1,0 +1,7 @@
+{
+  "name": "Aura",
+  "description": "Aura offers a serene, iOS-inspired weather experience with immersive dynamic backgrounds and AI-powered insights.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

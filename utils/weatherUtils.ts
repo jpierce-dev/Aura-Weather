@@ -1,0 +1,145 @@
+
+import { Cloud, CloudDrizzle, CloudFog, CloudLightning, CloudRain, CloudSnow, Moon, Sun, Wind } from 'lucide-react';
+import { WeatherType } from '../types';
+
+// WMO Weather interpretation codes (WW)
+// https://open-meteo.com/en/docs
+export const getWeatherType = (code: number): WeatherType => {
+  if (code === 0) return WeatherType.Clear;
+  if (code >= 1 && code <= 3) return WeatherType.Cloudy;
+  if (code === 45 || code === 48) return WeatherType.Fog;
+  if (code >= 51 && code <= 57) return WeatherType.Drizzle;
+  if (code >= 61 && code <= 67) return WeatherType.Rain;
+  if (code >= 71 && code <= 77) return WeatherType.Snow;
+  if (code >= 80 && code <= 82) return WeatherType.Rain;
+  if (code >= 85 && code <= 86) return WeatherType.Snow;
+  if (code >= 95 && code <= 99) return WeatherType.Thunderstorm;
+  return WeatherType.Clear;
+};
+
+export const getWeatherDescription = (code: number): string => {
+  const map: Record<number, string> = {
+    0: '晴朗',
+    1: '大致晴朗',
+    2: '多云',
+    3: '阴天',
+    45: '雾',
+    48: '冻雾',
+    51: '毛毛雨',
+    53: '中度毛毛雨',
+    55: '密毛毛雨',
+    61: '小雨',
+    63: '中雨',
+    65: '大雨',
+    71: '小雪',
+    73: '中雪',
+    75: '大雪',
+    77: '雪粒',
+    80: '阵雨',
+    81: '中度阵雨',
+    82: '暴雨',
+    85: '阵雪',
+    86: '大阵雪',
+    95: '雷雨',
+    96: '雷雨伴有冰雹',
+    99: '强雷雨伴有冰雹',
+  };
+  return map[code] || '未知';
+};
+
+export const getIconForWeather = (code: number, isDay: number = 1) => {
+  const type = getWeatherType(code);
+  
+  if (type === WeatherType.Clear) {
+    return isDay ? Sun : Moon;
+  }
+  
+  switch (type) {
+    case WeatherType.Cloudy: return Cloud;
+    case WeatherType.Fog: return CloudFog;
+    case WeatherType.Drizzle: return CloudDrizzle;
+    case WeatherType.Rain: return CloudRain;
+    case WeatherType.Snow: return CloudSnow;
+    case WeatherType.Thunderstorm: return CloudLightning;
+    default: return Sun;
+  }
+};
+
+export const formatTime = (isoString: string): string => {
+  const date = new Date(isoString);
+  // Time remains numeric/English format (e.g., 10:00 AM)
+  return date.toLocaleTimeString([], { hour: 'numeric', hour12: false, minute: '2-digit' });
+};
+
+export const getDayName = (isoString: string): string => {
+  const date = new Date(isoString);
+  const today = new Date();
+  
+  if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth()) {
+    return '今天';
+  }
+  
+  // Use Chinese week names
+  const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  return days[date.getDay()];
+};
+
+// Convert km/h to Beaufort scale (Wind Level)
+export const getWindScale = (speedKmh: number): number => {
+  if (speedKmh < 1) return 0;
+  if (speedKmh < 6) return 1;
+  if (speedKmh < 12) return 2;
+  if (speedKmh < 20) return 3;
+  if (speedKmh < 29) return 4;
+  if (speedKmh < 39) return 5;
+  if (speedKmh < 50) return 6;
+  if (speedKmh < 62) return 7;
+  if (speedKmh < 75) return 8;
+  if (speedKmh < 89) return 9;
+  if (speedKmh < 103) return 10;
+  if (speedKmh < 117) return 11;
+  return 12;
+};
+
+// AQI Helpers
+export const getAQIDescription = (aqi: number) => {
+  if (aqi <= 50) return { label: "优", color: "text-green-400", bgGradient: "from-green-400 to-green-500", percentage: (aqi/50)*100 };
+  if (aqi <= 100) return { label: "良", color: "text-yellow-400", bgGradient: "from-yellow-400 to-yellow-500", percentage: ((aqi-50)/50)*100 };
+  if (aqi <= 150) return { label: "轻度污染", color: "text-orange-400", bgGradient: "from-orange-400 to-orange-500", percentage: ((aqi-100)/50)*100 };
+  if (aqi <= 200) return { label: "中度污染", color: "text-red-400", bgGradient: "from-red-400 to-red-500", percentage: ((aqi-150)/50)*100 };
+  if (aqi <= 300) return { label: "重度污染", color: "text-purple-400", bgGradient: "from-purple-400 to-purple-500", percentage: ((aqi-200)/100)*100 };
+  return { label: "严重污染", color: "text-red-900", bgGradient: "from-red-800 to-red-900", percentage: 100 };
+};
+
+// Moon Phase Helpers
+export const getMoonPhaseDescription = (phase: number) => {
+  // Phase is 0 to 1
+  // 0: New Moon
+  // 0.25: First Quarter
+  // 0.5: Full Moon
+  // 0.75: Last Quarter
+  
+  // Approximate ranges
+  if (phase > 0.95 || phase <= 0.05) return "新月";
+  if (phase > 0.05 && phase < 0.20) return "娥眉月";
+  if (phase >= 0.20 && phase <= 0.30) return "上弦月";
+  if (phase > 0.30 && phase < 0.45) return "盈凸月";
+  if (phase >= 0.45 && phase <= 0.55) return "满月";
+  if (phase > 0.55 && phase < 0.70) return "亏凸月";
+  if (phase >= 0.70 && phase <= 0.80) return "下弦月";
+  return "残月";
+};
+
+// Calculate Moon Phase locally
+// Returns 0.0 to 1.0
+export const calculateMoonPhase = (date: Date): number => {
+  const synodic = 29.53058867;
+  // Known New Moon: Jan 6 2000, 18:14 UTC
+  const knownNewMoon = new Date(Date.UTC(2000, 0, 6, 18, 14, 0)).getTime();
+  const diff = date.getTime() - knownNewMoon;
+  const days = diff / (1000 * 60 * 60 * 24);
+  const cycles = days / synodic;
+  let phase = cycles % 1;
+  if (phase < 0) phase += 1;
+  return phase;
+};
