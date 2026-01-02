@@ -48,7 +48,7 @@ const SunModal: React.FC<SunModalProps> = ({ data, onClose }) => {
 
   useEffect(() => {
     let startTime: number | null = null;
-    const duration = 1500; // Faster animation for UX
+    const duration = 12000; // 12 seconds duration
 
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;

@@ -109,13 +109,14 @@ export const getWindScale = (speedKmh: number): number => {
 };
 
 export const getAQIDescription = (aqi: number) => {
-  if (aqi <= 50) return { label: "优", color: "text-green-400", percentage: (aqi / 50) * 100 };
-  if (aqi <= 100) return { label: "良", color: "text-yellow-400", percentage: ((aqi - 50) / 50) * 100 };
-  if (aqi <= 150) return { label: "轻度污染", color: "text-orange-400", percentage: ((aqi - 100) / 50) * 100 };
-  if (aqi <= 200) return { label: "中度污染", color: "text-red-400", percentage: ((aqi - 150) / 50) * 100 };
-  if (aqi <= 300) return { label: "重度污染", color: "text-purple-400", percentage: ((aqi - 200) / 100) * 100 };
-  return { label: "严重污染", color: "text-red-900", percentage: 100 };
+  if (aqi <= 50) return { label: "优", color: "text-green-400", bgGradient: "from-green-400 to-green-500", percentage: (aqi / 50) * 100 };
+  if (aqi <= 100) return { label: "良", color: "text-yellow-400", bgGradient: "from-yellow-400 to-yellow-500", percentage: ((aqi - 50) / 50) * 100 };
+  if (aqi <= 150) return { label: "轻度污染", color: "text-orange-400", bgGradient: "from-orange-400 to-orange-500", percentage: ((aqi - 100) / 50) * 100 };
+  if (aqi <= 200) return { label: "中度污染", color: "text-red-400", bgGradient: "from-red-400 to-red-500", percentage: ((aqi - 150) / 50) * 100 };
+  if (aqi <= 300) return { label: "重度污染", color: "text-purple-400", bgGradient: "from-purple-400 to-purple-500", percentage: ((aqi - 200) / 100) * 100 };
+  return { label: "严重污染", color: "text-red-900", bgGradient: "from-red-800 to-red-900", percentage: 100 };
 };
+
 
 export const getMoonPhaseDescription = (phase: number) => {
   if (phase > 0.95 || phase <= 0.05) return "新月";

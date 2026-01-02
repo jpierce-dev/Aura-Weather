@@ -49,7 +49,7 @@ const AirQualityForecast: React.FC<AirQualityForecastProps> = ({ data }) => {
     <div className="w-full bg-white/10 backdrop-blur-md rounded-2xl p-4 mb-4 border border-white/10">
       <div className="text-xs font-medium text-white/70 uppercase mb-3 flex items-center justify-between">
         <div className="flex items-center">
-          <Wind size={14} className="mr-1.5" /> 24小时 AQI 预报
+          <Wind size={14} className="mr-1.5" /> 24小时预报
         </div>
       </div>
 
@@ -66,11 +66,8 @@ const AirQualityForecast: React.FC<AirQualityForecastProps> = ({ data }) => {
 
               <div className="h-10 w-1.5 rounded-full bg-white/10 mb-2 relative overflow-hidden">
                 <div
-                  className={`absolute bottom-0 left-0 w-full rounded-full transition-all duration-1000 bg-gradient-to-t from-${info.color.split('-')[1]}-400 to-${info.color.split('-')[1]}-500`}
-                  style={{
-                    height: `${Math.min((hour.aqi / 200) * 100, 100)}%`,
-                    backgroundColor: 'currentColor' // Fallback
-                  }}
+                  className={`absolute bottom-0 left-0 w-full rounded-full bg-gradient-to-t ${info.bgGradient}`}
+                  style={{ height: `${Math.min((hour.aqi / 200) * 100, 100)}%` }}
                 />
               </div>
 
@@ -99,8 +96,8 @@ const AirQualityForecast: React.FC<AirQualityForecastProps> = ({ data }) => {
 
               <div className="flex-1 mx-3 h-2 bg-white/5 rounded-full relative overflow-hidden">
                 <div
-                  className={`absolute top-0 left-0 h-full rounded-full transition-all duration-1000 bg-gradient-to-r from-${info.color.split('-')[1]}-400 to-${info.color.split('-')[1]}-500`}
-                  style={{ width: `${widthPercent}%`, backgroundColor: 'currentColor' }}
+                  className={`absolute top-0 left-0 h-full rounded-full bg-gradient-to-r ${info.bgGradient}`}
+                  style={{ width: `${widthPercent}%` }}
                 />
               </div>
 
