@@ -12,6 +12,7 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({ weatherCode, isDa
   const type = getWeatherType(weatherCode);
 
   // --- 1. Base Gradients ---
+  // --- 1. Base Gradients ---
   const backgroundClass = useMemo(() => {
     // --- NIGHT ---
     if (!isDay) {
@@ -66,6 +67,40 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({ weatherCode, isDa
     }
   }, [type, isDay]);
 
+  // Update Theme Color for Android PWA Status Bar
+  React.useEffect(() => {
+    let color = '#000000'; // Default
+    if (!isDay) {
+      switch (type) {
+        case WeatherType.Clear: color = '#0B1026'; break;
+        case WeatherType.Cloudy: color = '#232526'; break;
+        case WeatherType.Fog: color = '#3E3834'; break;
+        case WeatherType.Rain:
+        case WeatherType.Drizzle: color = '#000428'; break;
+        case WeatherType.Thunderstorm: color = '#0f0c29'; break;
+        case WeatherType.Snow: color = '#16222A'; break;
+        default: color = '#0B1026'; break;
+      }
+    } else {
+      switch (type) {
+        case WeatherType.Clear: color = '#005AA7'; break;
+        case WeatherType.Cloudy: color = '#606c88'; break;
+        case WeatherType.Fog: color = '#9D8157'; break;
+        case WeatherType.Rain:
+        case WeatherType.Drizzle: color = '#4B6CB7'; break;
+        case WeatherType.Thunderstorm: color = '#2C3E50'; break;
+        case WeatherType.Snow: color = '#E6DADA'; break;
+        default: color = '#2980B9'; break;
+      }
+    }
+
+    // Update the meta tag
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', color);
+    }
+  }, [type, isDay]);
+
   // Flags
   const isClear = type === WeatherType.Clear;
   const isCloudy = type === WeatherType.Cloudy;
@@ -105,7 +140,7 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({ weatherCode, isDa
       <style>{animations}</style>
 
       {/* --- CELESTIAL BODIES --- */}
-      
+
       {/* Sun (Day + Clear/Cloudy/Fog) */}
       {isDay === 1 && (isClear || isCloudy || isFoggy) && (
         <div className="absolute top-10 right-10">
@@ -118,10 +153,10 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({ weatherCode, isDa
       {/* Moon (Night + Clear/Cloudy) */}
       {!isDay && (
         <div className="absolute top-16 right-12">
-           <div className="w-16 h-16 rounded-full bg-slate-200 opacity-90 shadow-[0_0_40px_rgba(255,255,255,0.3)]" />
-           {/* Craters - simplistic */}
-           <div className="absolute top-4 left-3 w-4 h-4 rounded-full bg-slate-300 opacity-50" />
-           <div className="absolute bottom-4 right-5 w-3 h-3 rounded-full bg-slate-300 opacity-50" />
+          <div className="w-16 h-16 rounded-full bg-slate-200 opacity-90 shadow-[0_0_40px_rgba(255,255,255,0.3)]" />
+          {/* Craters - simplistic */}
+          <div className="absolute top-4 left-3 w-4 h-4 rounded-full bg-slate-300 opacity-50" />
+          <div className="absolute bottom-4 right-5 w-3 h-3 rounded-full bg-slate-300 opacity-50" />
         </div>
       )}
 
@@ -148,9 +183,9 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({ weatherCode, isDa
       {/* --- CLOUDS (Cloudy / Thunderstorm) --- */}
       {(isCloudy || isThunder) && (
         <div className="absolute inset-0">
-           <CloudShape className={`text-white top-[10%] left-[-10%] w-[50%] opacity-20 anim-cloud`} style={{ animationDuration: '30s' }} />
-           <CloudShape className={`text-gray-100 top-[20%] right-[-10%] w-[60%] opacity-20 anim-cloud`} style={{ animationDuration: '40s', animationDelay: '2s' }} />
-           <CloudShape className={`text-white top-[40%] left-[20%] w-[30%] opacity-10 anim-cloud`} style={{ animationDuration: '25s', animationDelay: '5s' }} />
+          <CloudShape className={`text-white top-[10%] left-[-10%] w-[50%] opacity-20 anim-cloud`} style={{ animationDuration: '30s' }} />
+          <CloudShape className={`text-gray-100 top-[20%] right-[-10%] w-[60%] opacity-20 anim-cloud`} style={{ animationDuration: '40s', animationDelay: '2s' }} />
+          <CloudShape className={`text-white top-[40%] left-[20%] w-[30%] opacity-10 anim-cloud`} style={{ animationDuration: '25s', animationDelay: '5s' }} />
         </div>
       )}
 
@@ -159,24 +194,24 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({ weatherCode, isDa
         <div className="absolute inset-0 pointer-events-none">
           {/* Base Haze */}
           <div className={`absolute inset-0 ${isDay ? 'bg-amber-100/10' : 'bg-white/5'} backdrop-blur-[2px]`} />
-          
+
           {/* Moving Dust Streaks */}
           {[...Array(6)].map((_, i) => (
-             <div 
-               key={i}
-               className={`absolute h-[2px] w-[30%] ${isDay ? 'bg-amber-100/30' : 'bg-gray-400/20'} rounded-full anim-sand`}
-               style={{
-                 top: `${10 + Math.random() * 80}%`,
-                 left: '-30%',
-                 animationDuration: `${3 + Math.random() * 4}s`,
-                 animationDelay: `${Math.random() * 2}s`
-               }}
-             />
+            <div
+              key={i}
+              className={`absolute h-[2px] w-[30%] ${isDay ? 'bg-amber-100/30' : 'bg-gray-400/20'} rounded-full anim-sand`}
+              style={{
+                top: `${10 + Math.random() * 80}%`,
+                left: '-30%',
+                animationDuration: `${3 + Math.random() * 4}s`,
+                animationDelay: `${Math.random() * 2}s`
+              }}
+            />
           ))}
-          
+
           {/* Grain Texture Overlay (Simulated with noise) */}
-          <div className="absolute inset-0 opacity-20 mix-blend-overlay" 
-               style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+          <div className="absolute inset-0 opacity-20 mix-blend-overlay"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
           />
         </div>
       )}
@@ -184,18 +219,18 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({ weatherCode, isDa
       {/* --- RAIN --- */}
       {(isRainy || isThunder) && (
         <div className="absolute inset-0 overflow-hidden">
-           {[...Array(80)].map((_, i) => (
-             <div 
-               key={i}
-               className="absolute bg-white/40 w-[1px] rounded-full anim-rain"
-               style={{
-                 height: `${Math.random() * 20 + 10}px`,
-                 left: `${Math.random() * 100}%`,
-                 animationDuration: `${0.5 + Math.random() * 0.3}s`,
-                 animationDelay: `${Math.random() * 2}s`
-               }}
-             />
-           ))}
+          {[...Array(80)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute bg-white/40 w-[1px] rounded-full anim-rain"
+              style={{
+                height: `${Math.random() * 20 + 10}px`,
+                left: `${Math.random() * 100}%`,
+                animationDuration: `${0.5 + Math.random() * 0.3}s`,
+                animationDelay: `${Math.random() * 2}s`
+              }}
+            />
+          ))}
         </div>
       )}
 
@@ -207,19 +242,19 @@ const DynamicBackground: React.FC<DynamicBackgroundProps> = ({ weatherCode, isDa
       {/* --- SNOW --- */}
       {isSnowy && (
         <div className="absolute inset-0 overflow-hidden">
-           {[...Array(50)].map((_, i) => (
-             <div 
-               key={i}
-               className="absolute bg-white/80 rounded-full anim-snow"
-               style={{
-                 width: `${Math.random() * 3 + 2}px`,
-                 height: `${Math.random() * 3 + 2}px`,
-                 left: `${Math.random() * 100}%`,
-                 animationDuration: `${3 + Math.random() * 4}s`,
-                 animationDelay: `${Math.random() * 5}s`
-               }}
-             />
-           ))}
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute bg-white/80 rounded-full anim-snow"
+              style={{
+                width: `${Math.random() * 3 + 2}px`,
+                height: `${Math.random() * 3 + 2}px`,
+                left: `${Math.random() * 100}%`,
+                animationDuration: `${3 + Math.random() * 4}s`,
+                animationDelay: `${Math.random() * 5}s`
+              }}
+            />
+          ))}
         </div>
       )}
     </div>

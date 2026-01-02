@@ -49,7 +49,7 @@ const AirQualityForecast: React.FC<AirQualityForecastProps> = ({ data }) => {
     <div className="w-full bg-white/10 backdrop-blur-md rounded-2xl p-4 mb-4 border border-white/10">
       <div className="text-xs font-medium text-white/70 uppercase mb-3 flex items-center justify-between">
         <div className="flex items-center">
-          <Wind size={14} className="mr-1.5" /> 24小时预报
+          <Wind size={14} className="mr-1.5" /> 24小时 AQI 预报
         </div>
       </div>
 
