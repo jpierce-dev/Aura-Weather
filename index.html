@@ -1,82 +1,102 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
-    
-    <!-- PWA / Immersive Status Bar Settings -->
-    <title>Aura</title>
-    <!-- PWA settings will be injected by vite-plugin-pwa -->
-    
-    <!-- iOS Specific: Makes status bar transparent (content flows behind it) -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Aura" />
-    
-    <!-- Android / General Theme Color -->
-    <meta name="theme-color" content="#0f172a" />
-    <meta name="mobile-web-app-capable" content="yes">
 
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-    <link rel="apple-touch-icon" href="/icon.svg" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
+
+  <!-- PWA / Immersive Status Bar Settings -->
+  <title>Aura</title>
+  <!-- PWA settings will be injected by vite-plugin-pwa -->
+
+  <!-- iOS Specific: Makes status bar transparent (content flows behind it) -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Aura" />
+
+  <!-- Android / General Theme Color -->
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
 
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            spacing: {
-              'safe-top': 'env(safe-area-inset-top)',
-              'safe-bottom': 'env(safe-area-inset-bottom)',
-              'safe-left': 'env(safe-area-inset-left)',
-              'safe-right': 'env(safe-area-inset-right)',
-            }
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          spacing: {
+            'safe-top': 'env(safe-area-inset-top)',
+            'safe-bottom': 'env(safe-area-inset-bottom)',
+            'safe-left': 'env(safe-area-inset-left)',
+            'safe-right': 'env(safe-area-inset-right)',
           }
         }
       }
-    </script>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap');
-      
-      body {
-        font-family: 'Inter', sans-serif;
-        overscroll-behavior-y: none; /* Prevent pull-to-refresh on mobile */
-        -webkit-tap-highlight-color: transparent;
-        background-color: black; /* Default to black, DynamicBackground sits on top */
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      overscroll-behavior-y: none;
+      /* Prevent pull-to-refresh on mobile */
+      -webkit-tap-highlight-color: transparent;
+      background-color: black;
+      /* Default to black, DynamicBackground sits on top */
+    }
+
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      /* IE and Edge */
+      scrollbar-width: none;
+      /* Firefox */
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
       }
 
-      /* Hide scrollbar for Chrome, Safari and Opera */
-      .no-scrollbar::-webkit-scrollbar {
-          display: none;
+      50% {
+        transform: translateY(-10px);
       }
 
-      /* Hide scrollbar for IE, Edge and Firefox */
-      .no-scrollbar {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;  /* Firefox */
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    .animate-float {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes pulse-slow {
+
+      0%,
+      100% {
+        opacity: 0.5;
       }
 
-      @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
+      50% {
+        opacity: 0.8;
       }
-      
-      .animate-float {
-        animation: float 6s ease-in-out infinite;
-      }
-      
-      @keyframes pulse-slow {
-        0%, 100% { opacity: 0.5; }
-        50% { opacity: 0.8; }
-      }
-      
-      .animate-pulse-slow {
-        animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-      }
-    </style>
+    }
+
+    .animate-pulse-slow {
+      animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
   <script type="importmap">
 {
   "imports": {
@@ -89,10 +109,12 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
+  <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="text-white antialiased select-none">
-    <div id="root"></div>
+
+<body class="text-white antialiased select-none">
+  <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
+
 </html>
