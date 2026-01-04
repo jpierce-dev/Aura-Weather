@@ -91,15 +91,20 @@ const App: React.FC = () => {
     if (initialLoadStarted.current) return;
     initialLoadStarted.current = true;
 
+    // 1. If we have cached data, trigger a silent refresh for the cached location first
+    // so the user sees updated data for what's currently on screen.
     if (location && weather) {
-      // If we have cached location and weather, just refresh once
-      loadData(location.lat, location.lon, city);
-      return;
+      loadData(location.lat, location.lon, city).catch(() => { });
     }
 
+    // 2. Always attempt to get current Geolocation to support "auto-locate" feature.
+    // If the user moved, this will eventually override the cached city with the current GPS city.
     const handleDefaultLocation = () => {
-      console.warn("Using default location: Dubai");
-      loadData(DUBAI_COORDS.lat, DUBAI_COORDS.lon);
+      // Only fallback to Dubai if we have absolutely no data (no cache, no GPS)
+      if (!location) {
+        console.warn("Using default location: Dubai");
+        loadData(DUBAI_COORDS.lat, DUBAI_COORDS.lon);
+      }
     };
 
     if ("geolocation" in navigator) {
@@ -110,20 +115,29 @@ const App: React.FC = () => {
             // Fetch name for GPS location specifically to store it
             const gpsCityName = await getCityName(latitude, longitude);
             setGpsLocation({ name: gpsCityName, lat: latitude, lon: longitude });
+            // Load fresh data for the ACTUAL current location
             await loadData(latitude, longitude, gpsCityName);
           } catch (e) {
+            // If fetching name fails, still load weather for coords
             loadData(latitude, longitude);
           }
         },
         (err) => {
+          console.warn('Geolocation error:', err.message);
+          // If GPS fails, and we don't have cache, use default.
+          // If we have cache, we just stay on cache (which we refreshed above).
           if (!location) handleDefaultLocation();
         },
-        { timeout: 10000 }
+        {
+          enableHighAccuracy: false,
+          timeout: 5000,
+          maximumAge: 300000 // 5 minutes 
+        }
       );
     } else {
       if (!location) handleDefaultLocation();
     }
-  }, [loadData]); // Removed location from dependencies to avoid infinite loops if loadData updates location
+  }, [loadData]); // Keep dependencies minimal to avoid loops
 
   const handleCitySelect = (lat: number, lon: number, name: string) => {
     setIsSearchOpen(false);
