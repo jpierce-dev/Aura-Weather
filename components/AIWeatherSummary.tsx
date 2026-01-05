@@ -12,18 +12,15 @@ interface AIWeatherSummaryProps {
 const AIWeatherSummary: React.FC<AIWeatherSummaryProps> = ({ data, city, isRefreshing }) => {
   const [insight, setInsight] = useState<{ summary: string; clothing: string; airQuality?: string } | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isForced, setIsForced] = useState(false);
 
-  // 使用一个内部触发器，避免 isRefreshing 频繁切换导致的竞态问题
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const lastCity = React.useRef(city);
-
-  // 当显式刷新（isRefreshing 为 true）或城市改变时，才更新触发器
+  // 当 isRefreshing 为 true 时，记录一个“强制刷新”标记
+  // 这个标记会一直保持到 AI 成功获取新数据为止
   useEffect(() => {
-    if (isRefreshing || city !== lastCity.current) {
-      setRefreshTrigger(prev => prev + 1);
-      lastCity.current = city;
+    if (isRefreshing) {
+      setIsForced(true);
     }
-  }, [city, isRefreshing]);
+  }, [isRefreshing]);
 
   useEffect(() => {
     let isMounted = true;
@@ -32,16 +29,19 @@ const AIWeatherSummary: React.FC<AIWeatherSummaryProps> = ({ data, city, isRefre
       setLoading(true);
       try {
         const key = `weather_summary_${city}_${new Date().toDateString()}`;
-        // 只有当是因为手动刷新（isRefreshing 为 true）触发时，才跳过缓存
-        const cached = isRefreshing ? null : localStorage.getItem(key);
 
-        if (cached && !isRefreshing) {
+        // 如果处于强制刷新状态，跳过本地缓存
+        const cached = isForced ? null : localStorage.getItem(key);
+
+        if (cached) {
           setInsight(JSON.parse(cached));
         } else {
           const result = await generateWeatherSummary(data, city);
           if (isMounted) {
             setInsight(result);
             localStorage.setItem(key, JSON.stringify(result));
+            // 成功获取新数据后，重置强制刷新标记
+            setIsForced(false);
           }
         }
       } catch (err) {
@@ -56,10 +56,7 @@ const AIWeatherSummary: React.FC<AIWeatherSummaryProps> = ({ data, city, isRefre
     }
 
     return () => { isMounted = false; };
-    // 关键修复：依赖项去掉 isRefreshing，改用 refreshTrigger。
-    // 即使 isRefreshing 从 true 变回 false，只要 refreshTrigger 不变，
-    // 此 Effect 就不会重启，原来的请求也不会因为 isMounted 变 false 而被放弃。
-  }, [data, city, refreshTrigger]);
+  }, [data, city, isForced]);
 
   if (!process.env.GEMINI_API_KEY && !insight) return null; // Hide if no key and no data
 
