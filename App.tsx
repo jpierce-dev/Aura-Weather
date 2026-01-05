@@ -274,7 +274,11 @@ const App: React.FC = () => {
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
                 {/* AI Summary */}
-                <AIWeatherSummary data={weather} city={city} />
+                <AIWeatherSummary
+                  data={weather}
+                  city={city}
+                  isRefreshing={isRefreshing}
+                />
 
                 {/* Hourly List */}
                 <HourlyForecast data={weather} />

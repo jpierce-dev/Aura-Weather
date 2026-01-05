@@ -6,9 +6,10 @@ import { Sparkles } from 'lucide-react';
 interface AIWeatherSummaryProps {
   data: WeatherData;
   city: string;
+  isRefreshing?: boolean;
 }
 
-const AIWeatherSummary: React.FC<AIWeatherSummaryProps> = ({ data, city }) => {
+const AIWeatherSummary: React.FC<AIWeatherSummaryProps> = ({ data, city, isRefreshing }) => {
   const [insight, setInsight] = useState<{ summary: string; clothing: string; airQuality?: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +20,9 @@ const AIWeatherSummary: React.FC<AIWeatherSummaryProps> = ({ data, city }) => {
       try {
         // Simple cache key based on city + date to avoid spamming API on re-renders
         const key = `weather_summary_${city}_${new Date().toDateString()}`;
-        const cached = localStorage.getItem(key);
+
+        // If isRefreshing is true, we ignore the cache and force a new fetch
+        const cached = isRefreshing ? null : localStorage.getItem(key);
 
         if (cached) {
           setInsight(JSON.parse(cached));
@@ -42,7 +45,7 @@ const AIWeatherSummary: React.FC<AIWeatherSummaryProps> = ({ data, city }) => {
     }
 
     return () => { isMounted = false; };
-  }, [data, city]);
+  }, [data, city, isRefreshing]);
 
   if (!process.env.GEMINI_API_KEY && !insight) return null; // Hide if no key and no data
 
