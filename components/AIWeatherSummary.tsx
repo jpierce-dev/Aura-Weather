@@ -15,13 +15,17 @@ const AIWeatherSummary: React.FC<AIWeatherSummaryProps> = ({ data, city, isRefre
 
   useEffect(() => {
     let isMounted = true;
+
+    // 如果 isRefreshing 从 true 变回 false，且我们已经有数据或正在加载，
+    // 则说明刷新逻辑已经触发或完成，不应再次读取旧缓存覆盖结果。
+    if (isRefreshing === false && insight && !loading) return;
+
     const fetchSummary = async () => {
       setLoading(true);
       try {
-        // Simple cache key based on city + date to avoid spamming API on re-renders
         const key = `weather_summary_${city}_${new Date().toDateString()}`;
 
-        // If isRefreshing is true, we ignore the cache and force a new fetch
+        // 如果正在刷新动作中（isRefreshing 为 true），强制跳过缓存
         const cached = isRefreshing ? null : localStorage.getItem(key);
 
         if (cached) {
