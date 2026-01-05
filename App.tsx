@@ -8,6 +8,7 @@ import HourlyForecast from './components/HourlyForecast';
 import DailyForecast from './components/DailyForecast';
 import WeatherGrid from './components/WeatherGrid';
 import AirQualityForecast from './components/AirQualityForecast';
+import AIWeatherSummary from './components/AIWeatherSummary';
 import CitySearchModal from './components/CitySearchModal';
 import { Loader2, MapPinOff, Plus } from 'lucide-react';
 
@@ -271,6 +272,9 @@ const App: React.FC = () => {
 
               {/* Content Grid */}
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+
+                {/* AI Summary */}
+                <AIWeatherSummary data={weather} city={city} />
 
                 {/* Hourly List */}
                 <HourlyForecast data={weather} />

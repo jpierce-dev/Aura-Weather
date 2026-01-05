@@ -70,4 +70,5 @@ export enum WeatherType {
 export interface SummaryResponse {
   summary: string;
   clothing: string;
+  airQuality?: string;
 }
