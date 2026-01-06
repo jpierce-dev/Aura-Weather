@@ -172,6 +172,8 @@ const App: React.FC = () => {
       const currentY = e.touches[0].clientY;
       const diff = currentY - pullStartY;
       if (diff > 0) {
+        // Prevent browser's native pull-to-refresh (especially on Android Chrome)
+        if (e.cancelable) e.preventDefault();
         // Add resistance
         setPullDistance(Math.min(diff * 0.4, 120));
       }
@@ -260,8 +262,8 @@ const App: React.FC = () => {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="relative z-10 h-screen overflow-y-auto no-scrollbar pt-safe-top pb-safe-bottom transition-transform duration-200"
-        style={{ transform: `translateY(${pullDistance}px)` }}
+        className="relative z-10 h-screen overflow-y-auto no-scrollbar pt-safe-top pb-safe-bottom transition-transform duration-200 overscroll-none"
+        style={{ transform: `translateY(${pullDistance}px)`, overscrollBehaviorY: 'none' }}
       >
         <div className="max-w-2xl mx-auto px-4 md:px-8 pb-10">
 
